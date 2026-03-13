@@ -1,0 +1,12 @@
+{
+  "name": "tabla-numeros",
+  "version": "1.0.0",
+  "description": "Sistema para elegir números del 1 al 100",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
