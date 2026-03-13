@@ -1,9 +1,10 @@
 const grid = document.getElementById('grid');
 
-// Mostrar/Ocultar controles de admin
+// Mostrar/Ocultar controles según el rol
 function toggleAdmin() {
     const role = document.getElementById('role').value;
     document.getElementById('admin-controls').style.display = role === 'admin' ? 'block' : 'none';
+    document.getElementById('player-controls').style.display = role === 'player' ? 'block' : 'none';
 }
 
 // Traer los números del servidor
@@ -26,34 +27,62 @@ function renderGrid(numbers) {
         box.innerText = i;
         
         if (numbers[i]) {
-            box.classList.add('taken'); // Rojo si está ocupado
+            box.classList.add('taken'); 
         } else {
-            box.onclick = () => pickNumber(i); // Clickeable si está libre
+            box.onclick = () => pickNumber(i); 
         }
         grid.appendChild(box);
     }
 }
 
-// Elegir un número
+// Elegir un número (Ahora envía el PIN)
 async function pickNumber(num) {
-    if(!confirm(`¿Seguro que quieres elegir el número ${num}?`)) return;
+    const pin = document.getElementById('player-pin').value;
+    
+    if (!pin) {
+        alert("Por favor, ingresa tu PIN antes de elegir un número.");
+        return;
+    }
+
+    if(!confirm(`¿Seguro que quieres usar un intento de tu PIN en el número ${num}?`)) return;
 
     const res = await fetch('/api/pick', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ number: num })
+        body: JSON.stringify({ number: num, pin: pin })
     });
     const data = await res.json();
     
+    alert(data.message);
     if (data.success) {
         fetchNumbers(); 
-    } else {
-        alert(data.message);
+    }
+}
+
+// Crear un PIN (Admin)
+async function createPin() {
+    const pass = document.getElementById('admin-pass').value;
+    const pinName = document.getElementById('new-pin-name').value;
+    const limit = document.getElementById('new-pin-limit').value;
+
+    const res = await fetch('/api/create-pin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: pass, pinName: pinName, limit: limit })
+    });
+    const data = await res.json();
+    
+    alert(data.message);
+    if (data.success) {
+        document.getElementById('new-pin-name').value = '';
+        document.getElementById('new-pin-limit').value = '';
     }
 }
 
 // Reiniciar la tabla (Admin)
 async function resetTable() {
+    if(!confirm('¿Estás seguro? Esto borrará todos los números elegidos y todos los PINs creados.')) return;
+
     const pass = document.getElementById('admin-pass').value;
     const res = await fetch('/api/reset', {
         method: 'POST',
@@ -70,5 +99,4 @@ async function resetTable() {
 
 // Iniciar
 fetchNumbers();
-// Actualizar la tabla cada 3 segundos para ver selecciones de otras personas
 setInterval(fetchNumbers, 3000);

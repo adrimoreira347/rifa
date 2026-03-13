@@ -16,10 +16,22 @@
                 <option value="player">Jugador</option>
                 <option value="admin">Administrador</option>
             </select>
+
+            <div id="player-controls" style="margin-top: 15px;">
+                <input type="text" id="player-pin" placeholder="Ingresa tu PIN aquí" style="border: 2px solid #007bff;">
+                <p style="font-size: 14px; color: #555;">(Pídele tu PIN al administrador)</p>
+            </div>
             
             <div id="admin-controls" style="display: none;">
                 <input type="password" id="admin-pass" placeholder="Contraseña de Admin">
-                <button onclick="resetTable()">Reiniciar Tabla</button>
+                <button onclick="resetTable()" style="background-color: #dc3545;">Reiniciar Todo</button>
+                
+                <hr style="margin: 15px 0;">
+                
+                <h3>Crear nuevo PIN para jugador</h3>
+                <input type="text" id="new-pin-name" placeholder="Escribe un PIN (Ej: VIP01)">
+                <input type="number" id="new-pin-limit" placeholder="Cantidad permitida" min="1">
+                <button onclick="createPin()">Generar PIN</button>
             </div>
         </div>
 
